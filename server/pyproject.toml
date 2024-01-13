@@ -10,6 +10,8 @@ dependencies = [
     "uvicorn[standard]>=0.25.0",
     "numpy>=1.26.3",
     "transformers[torch]>=4.36.2",
+    "ninja>=1.11.1.1",
+    "flash-attn>=2.4.2",
 ]
 requires-python = ">=3.11"
 readme = "README.md"
