@@ -11,19 +11,17 @@ from contextlib import asynccontextmanager
 DEVICE = os.getenv('DEVICE', 'mps')
 ATTN_IMPLEMENTATION = os.getenv('ATTN_IMPLEMENTATION', "sdpa")
 
-transcribe_pipeline = None
-
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    transcribe_pipeline = pipeline(
+    app.state.transcribe_pipeline = pipeline(
         "automatic-speech-recognition",
         model="openai/whisper-large-v3",
         torch_dtype=torch.float16 if ATTN_IMPLEMENTATION == "sdpa" else torch.bfloat16,
         device=DEVICE,
         model_kwargs={"attn_implementation": ATTN_IMPLEMENTATION},
     )
-    transcribe_pipeline.model.to('cuda')
+    app.state.transcribe_pipeline.model.to('cuda')
     yield
 
 app = FastAPI(lifespan=lifespan)
@@ -40,7 +38,7 @@ def read_root():
 async def transcribe(request: Request):
     body = await request.body()
     audio_chunk = pickle.loads(body)
-    outputs = transcribe_pipeline(
+    outputs = app.state.transcribe_pipeline(
         audio_chunk,
         chunk_length_s=30,
         batch_size=24,
