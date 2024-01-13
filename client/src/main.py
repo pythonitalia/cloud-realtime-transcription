@@ -46,14 +46,14 @@ def main():
                 audio_np_array = to_audio_array(audio_data)
 
                 if current_audio_chunk.is_complete:
-                    print('chunk done')
+                    print('chunk done', current_audio_chunk.audio_array)
                     # text = transcribe_model.transcribe(current_audio_chunk.audio_array)
                     # sentence = Sentence(
                     #     start_time=current_audio_chunk.start_time, end_time=current_audio_chunk.end_time, text=text
                     # )
-                    # current_audio_chunk = AudioChunk(
-                    #     audio_array=audio_np_array, start_time=datetime.now(tz=UTC)
-                    # )
+                    current_audio_chunk = AudioChunk(
+                        audio_array=audio_np_array, start_time=datetime.now(tz=UTC)
+                    )
                     # print(sentence.text)  # noqa: T201
                 else:
                     current_audio_chunk.update_array(audio_np_array)
