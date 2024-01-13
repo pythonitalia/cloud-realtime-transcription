@@ -1,3 +1,4 @@
+import httpx
 from queue import Queue
 import logging
 from datetime import UTC, datetime, timedelta
@@ -9,6 +10,9 @@ import speech_recognition as sr
 from audio_utils import get_microphone, get_speech_recognizer, get_all_audio_queue, to_audio_array, AudioChunk
 
 logger = logging.getLogger(__name__)
+
+TRANSCRIBING_SERVER = "http://localhost:3535/transcribe"
+
 
 def main():
     recording_duration = 2
@@ -48,7 +52,10 @@ def main():
 
                 if current_audio_chunk.is_complete:
                     serialized = pickle.dumps(current_audio_chunk.audio_array)
-                    print('chunk done', serialized)
+
+                    response = httpx.post(TRANSCRIBING_SERVER, data=serialized)
+                    print('chunk done', response.text, response.status_code)
+
                     # text = transcribe_model.transcribe(current_audio_chunk.audio_array)
                     # sentence = Sentence(
                     #     start_time=current_audio_chunk.start_time, end_time=current_audio_chunk.end_time, text=text
