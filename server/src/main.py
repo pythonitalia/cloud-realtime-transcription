@@ -8,8 +8,6 @@ from transformers import pipeline
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
 
-app = FastAPI()
-
 DEVICE = os.getenv('DEVICE', 'mps')
 ATTN_IMPLEMENTATION = os.getenv('ATTN_IMPLEMENTATION', "sdpa")
 
@@ -27,6 +25,8 @@ async def lifespan(app: FastAPI):
     )
     transcribe_pipeline.model.to('cuda')
     yield
+
+app = FastAPI(lifespan=lifespan)
 
 
 
