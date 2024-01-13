@@ -2,6 +2,7 @@ from queue import Queue
 import logging
 from datetime import UTC, datetime, timedelta
 from time import sleep
+import pickle
 
 import speech_recognition as sr
 
@@ -46,7 +47,8 @@ def main():
                 audio_np_array = to_audio_array(audio_data)
 
                 if current_audio_chunk.is_complete:
-                    print('chunk done', current_audio_chunk.audio_array)
+                    serialized = pickle.dumps(current_audio_chunk.audio_array)
+                    print('chunk done', serialized)
                     # text = transcribe_model.transcribe(current_audio_chunk.audio_array)
                     # sentence = Sentence(
                     #     start_time=current_audio_chunk.start_time, end_time=current_audio_chunk.end_time, text=text
