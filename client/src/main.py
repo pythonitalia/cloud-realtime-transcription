@@ -1,3 +1,4 @@
+import os
 import httpx
 from queue import Queue
 import logging
@@ -11,7 +12,7 @@ from audio_utils import get_microphone, get_speech_recognizer, get_all_audio_que
 
 logger = logging.getLogger(__name__)
 
-TRANSCRIBING_SERVER = "http://localhost:3535/transcribe"
+TRANSCRIBING_SERVER = os.getenv('TRANSCRIBING_SERVER', "http://localhost:3535/transcribe")
 
 
 def main():
