@@ -20,7 +20,7 @@ def read_root():
 TRANSCRIBE_PIPELINE = pipeline(
     "automatic-speech-recognition",
     model="openai/whisper-large-v3",
-    torch_dtype=torch.float16,
+    torch_dtype=torch.float16 if ATTN_IMPLEMENTATION == "sdpa" else torch.bfloat16,
     device=DEVICE,
     model_kwargs={"attn_implementation": ATTN_IMPLEMENTATION},
 )
