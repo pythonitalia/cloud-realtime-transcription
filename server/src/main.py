@@ -8,6 +8,8 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
+DEVICE = "mps"
+ATTN_IMPLEMENTATION = "sdpa"
 
 @app.get("/")
 def read_root():
@@ -18,8 +20,8 @@ TRANSCRIBE_PIPELINE = pipeline(
     "automatic-speech-recognition",
     model="openai/whisper-large-v3",
     torch_dtype=torch.float16,
-    device="mps",
-    model_kwargs={"attn_implementation": "sdpa"},
+    device=DEVICE,
+    model_kwargs={"attn_implementation": ATTN_IMPLEMENTATION},
 )
 
 
@@ -35,8 +37,7 @@ async def transcribe(request: Request):
             'task': 'transcribe',
             'language': 'english'
         },
-        # return_timestamps='word'
-        return_timestamps=False
+        return_timestamps='word'
     )
     text = outputs["text"].strip()
     return {"transcribe": text}
