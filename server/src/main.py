@@ -27,7 +27,7 @@ TRANSCRIBE_PIPELINE = pipeline(
 async def transcribe(request: Request):
     body = await request.body()
     audio_chunk = pickle.loads(body)
-    outputs = TRANSCRIBE_PIPELINE.pipe(
+    outputs = TRANSCRIBE_PIPELINE(
         audio_chunk,
         chunk_length_s=30,
         batch_size=24,
