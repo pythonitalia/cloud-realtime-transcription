@@ -51,10 +51,13 @@ def main():
                 audio_np_array = to_audio_array(audio_data)
 
                 if current_audio_chunk.is_complete:
+                    print('start serialize')
                     serialized = pickle.dumps(current_audio_chunk.audio_array)
+                    print('end serialize')
 
+                    print('start req')
                     response = httpx.post(TRANSCRIBING_SERVER, data=serialized)
-                    print('chunk done', response.text, response.status_code)
+                    print('req done', response.text, response.status_code)
 
                     # text = transcribe_model.transcribe(current_audio_chunk.audio_array)
                     # sentence = Sentence(
