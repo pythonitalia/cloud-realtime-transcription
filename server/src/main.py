@@ -1,3 +1,4 @@
+import os
 import pickle
 from typing import Union
 from fastapi import Request
@@ -8,8 +9,8 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-DEVICE = "mps"
-ATTN_IMPLEMENTATION = "sdpa"
+DEVICE = os.getenv('DEVICE', 'mps')
+ATTN_IMPLEMENTATION = os.getenv('ATTN_IMPLEMENTATION', "sdpa")
 
 @app.get("/")
 def read_root():
