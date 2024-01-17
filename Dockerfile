@@ -1,21 +1,25 @@
 FROM python:3.11
 
-WORKDIR /code
+RUN useradd -m -u 1000 user
+USER user
 
-RUN mkdir -p /code/.pdm_cache && mkdir -p /code/.transformers_cache
+ENV HOME=/home/user \
+    PATH=/home/user/.local/bin:$PATH
 
-ENV PDM_CACHE_DIR /code/.pdm_cache/
+WORKDIR $HOME/code
 
-COPY server/pdm.lock server/pyproject.toml ./
+ENV PDM_CACHE_DIR $HOME/code/.pdm_cache/
+ENV HF_HOME $HOME/code/.hf_home/
+
+COPY --chown=user server/pdm.lock server/pyproject.toml ./
 
 RUN pip install pdm
 
 RUN pdm install
 
-COPY server/ ./
+COPY --chown=user server/ ./
 
 ENV DEVICE cuda:0
 ENV ATTN_IMPLEMENTATION flash_attention_2
-ENV TRANSFORMERS_CACHE /code/.transformers_cache/
 
 ENTRYPOINT [ "./entrypoint.sh" ]
