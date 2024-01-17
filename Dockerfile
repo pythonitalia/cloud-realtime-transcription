@@ -14,3 +14,4 @@ ENV DEVICE cuda:0
 ENV ATTN_IMPLEMENTATION flash_attention_2
 
 ENTRYPOINT [ "./entrypoint.sh" ]
+CMD ["./.venv/bin/uvicorn", "src.main:app", "--host", "0.0.0.0", "--port", "7860"]
