@@ -7,7 +7,7 @@ RUN apt-get update -y \
   && add-apt-repository -y ppa:deadsnakes/ppa \
   && apt-get -y update \
   && apt-get install --no-install-recommends --assume-yes \
-        python3.11 python3.11-distutils curl
+        python3.11 python3.11-distutils curl git
 
 RUN useradd -m -u 1000 user
 USER user

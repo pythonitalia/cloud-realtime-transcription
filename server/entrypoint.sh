@@ -1,5 +1,8 @@
 #!/bin/bash
 
+./.venv/bin/ninja --version
+echo $?
+
 cd $HOME/code
 ls -al
 ls .venv/ -al
