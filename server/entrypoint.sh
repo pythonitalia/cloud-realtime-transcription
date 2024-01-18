@@ -1,8 +1,6 @@
 #!/bin/bash
 
-source ./.venv/bin/activate
-
-pip install flash_attn --no-build-isolation
+./.venv/bin/pip install flash_attn --no-build-isolation
 
 echo "Installation done"
 
