@@ -1,3 +1,4 @@
+import time
 import os
 import httpx
 from queue import Queue
@@ -56,9 +57,10 @@ def main():
                     serialized = pickle.dumps(current_audio_chunk.audio_array)
                     print('end serialize')
 
+                    start = time.time()
                     print('start req')
                     response = httpx.post(TRANSCRIBING_SERVER, data=serialized)
-                    print('req done', response.text, response.status_code)
+                    print('req done', response.text, response.status_code, time.time() - start)
 
                     # text = transcribe_model.transcribe(current_audio_chunk.audio_array)
                     # sentence = Sentence(
