@@ -1,23 +1,25 @@
-FROM python:3.11-bookworm as builder
-
-WORKDIR /code
-
-COPY server/pdm.lock server/pyproject.toml ./
-
-RUN pip install pdm
-
-RUN pdm venv create --no-symlink
-RUN pdm install
-
 FROM nvidia/cuda:12.3.1-devel-ubuntu20.04
 
 RUN useradd -m -u 1000 user
 USER user
 
+RUN apt-add-repository ppa:deadsnakes/ppa \
+  && apt-get update \
+  && DEBIAN_FRONTEND=noninteractive \
+      apt-get install --no-install-recommends --assume-yes \
+        python3.11
+
 ENV HOME=/home/user \
     PATH=/home/user/.local/bin:$PATH
 
 WORKDIR $HOME/code
+
+COPY --chown=user server/pdm.lock server/pyproject.toml ./
+
+RUN pip install pdm
+
+RUN pdm venv create --no-symlink
+RUN pdm install
 
 COPY --from=builder --chown=user /code/.venv ./.venv
 
