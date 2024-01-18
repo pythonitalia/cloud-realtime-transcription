@@ -16,7 +16,7 @@ TRANSCRIBING_SERVER = os.getenv('TRANSCRIBING_SERVER', "http://localhost:3535/tr
 
 
 def main():
-    recording_duration = 2
+    recording_duration = 1
     sample_rate = 16000
     energy_threshold = 300
 
