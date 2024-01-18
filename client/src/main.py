@@ -32,7 +32,7 @@ def main():
         data = audio.get_raw_data()
         data_queue.put(data)
 
-    speech_recognizer.listen_in_background(source=microphone, callback=record_callback)
+    speech_recognizer.listen_in_background(source=microphone, callback=record_callback, phrase_time_limit=recording_duration)
 
     print("\n🎤 Microphone is now listening...\n")
 
