@@ -6,6 +6,7 @@ COPY server/pdm.lock server/pyproject.toml ./
 
 RUN pip install pdm
 
+RUN pdm venv create --no-symlink
 RUN pdm install
 
 FROM nvidia/cuda:12.3.1-devel-ubuntu20.04
