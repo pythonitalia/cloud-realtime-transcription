@@ -32,6 +32,6 @@ ENV HF_HOME $HOME/code/.hf_home/
 
 ENV DEVICE cuda:0
 # ENV ATTN_IMPLEMENTATION flash_attention_2
-ENV ATTN_IMPLEMENTATION sdpa
+ENV ATTN_IMPLEMENTATION flash_attention
 
 ENTRYPOINT [ "./entrypoint.sh" ]
