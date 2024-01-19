@@ -1,7 +1,7 @@
 #!/bin/bash
 
-curl -sS https://bootstrap.pypa.io/get-pip.py | ./.venv/bin/python
-./.venv/bin/python -m pip install flash_attn==1.0.9 --no-build-isolation
+# curl -sS https://bootstrap.pypa.io/get-pip.py | ./.venv/bin/python
+# ./.venv/bin/python -m pip install flash_attn==1.0.9 --no-build-isolation
 
 echo "Installation done"
 
