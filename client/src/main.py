@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 TRANSCRIBING_SERVER = os.getenv('TRANSCRIBING_SERVER', "http://localhost:3535/transcribe")
 
 
-def main():
+def main(transcriptions_queue):
     recording_duration = 1
     sample_rate = 16000
     energy_threshold = 300
@@ -78,7 +78,9 @@ def main():
                     start = time.time()
                     print('start req')
                     response = httpx.post(TRANSCRIBING_SERVER, data=serialized)
+                    transcription = response.json()['transcribe']
                     print('req done', response.text, response.status_code, time.time() - start)
+                    transcriptions_queue.put(transcription)
 
                     # text = transcribe_model.transcribe(current_audio_chunk.audio_array)
                     # sentence = Sentence(
@@ -107,14 +109,23 @@ def main():
                 # print(sentence.text)  # noqa: T201
             break
 
-async def numbers(minimum, maximum):
-    for i in range(minimum, maximum + 1):
-        await asyncio.sleep(0.9)
-        yield dict(data=i)
+
+    # for i in range(minimum, maximum + 1):
+    #     await asyncio.sleep(0.9)
+    #     yield dict(data=i)
 
 async def sse(request):
-    generator = numbers(1, 5)
-    return EventSourceResponse(generator)
+    async def event_publisher():
+        try:
+            while True:
+                text = transcriptions_queue.get()
+                yield dict(data=text)
+                await asyncio.sleep(0.2)
+        except asyncio.CancelledError as e:
+            print(f"Disconnected from client (via refresh/close) {request.client}")
+
+    return EventSourceResponse(event_publisher())
+
 
 def test(request):
     return "hello world"
@@ -128,15 +139,18 @@ app = Starlette(debug=True, routes=routes)
 app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_methods=['*'], allow_headers=['*'])
 
 
-def server():
+def server(transcriptions_queue):
+    app.state.transcriptions_queue = transcriptions_queue
     uvicorn.run(app, host="0.0.0.0", port=8343, log_level='info')
 
 
 if __name__ == '__main__':
-    main_thread = threading.Thread(target=main)
+    transcriptions_queue = Queue()
+
+    main_thread = threading.Thread(target=main, args=(transcriptions_queue,))
     main_thread.start()
 
-    server_thread = threading.Thread(target=server)
+    server_thread = threading.Thread(target=server, args=(transcriptions_queue,))
     server_thread.start()
 
     main_thread.join()
