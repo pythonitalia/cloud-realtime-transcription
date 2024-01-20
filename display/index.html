@@ -5,13 +5,19 @@
   </head>
   <body>
     <h1>
-      Display text
+      <div class="text"></div>
+      <div class="next-text"></div>
     </h1>
 
     <script>
       window.onload = () => {
         const eventSource = new EventSource('http://localhost:8343/test');
+        const allText = document.querySelector('.text');
+        const nextText = document.querySelector('.next-text');
         evtSource.onmessage = (e) => {
+          const message = e.data;
+          nextText.innerHTML = message;
+
           console.log(e.data);
         };
       }
