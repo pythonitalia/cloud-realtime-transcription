@@ -1,3 +1,4 @@
+import numpy as np
 import time
 import os
 import httpx
@@ -37,6 +38,7 @@ def main():
 
     print("\n🎤 Microphone is now listening...\n")
 
+    prev_audio_array = None
     current_audio_chunk = AudioChunk(start_time=datetime.now(tz=UTC))
 
     while True:
@@ -54,7 +56,16 @@ def main():
 
                 if current_audio_chunk.is_complete:
                     print('start serialize')
-                    serialized = pickle.dumps(current_audio_chunk.audio_array)
+                    if prev_audio_array:
+                        serialized = pickle.dumps(
+                            np.concatenate(
+                                prev_audio_array,
+                                current_audio_chunk.audio_array
+                            )
+                        )
+                    else:
+                        serialized = pickle.dumps(current_audio_chunk.audio_array)
+                    prev_audio_array = current_audio_chunk.audio_array
                     print('end serialize')
 
                     start = time.time()
