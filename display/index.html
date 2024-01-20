@@ -16,6 +16,7 @@
         const nextText = document.querySelector('.next-text');
         let prevText = ""
         eventSource.onmessage = (e) => {
+          let message = e.data;
           allText.innerHTML += message;
 
           console.log(e.data);
