@@ -56,7 +56,7 @@ def main():
 
                 if current_audio_chunk.is_complete:
                     print('start serialize')
-                    if prev_audio_array:
+                    if prev_audio_array is not None:
                         serialized = pickle.dumps(
                             np.concatenate((
                                 prev_audio_array,
