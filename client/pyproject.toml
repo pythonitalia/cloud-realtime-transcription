@@ -11,6 +11,9 @@ dependencies = [
     "SpeechRecognition>=3.10.1",
     "transformers[torch]>=4.36.2",
     "httpx>=0.26.0",
+    "starlette>=0.35.1",
+    "uvicorn>=0.26.0",
+    "sse-starlette>=1.8.2",
 ]
 requires-python = ">=3.11"
 readme = "README.md"

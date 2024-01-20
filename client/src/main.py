@@ -1,3 +1,8 @@
+from starlette.applications import Starlette
+from starlette.routing import Route
+from sse_starlette.sse import EventSourceResponse
+import uvicorn
+import asyncio
 import numpy as np
 import time
 import os
@@ -100,6 +105,28 @@ def main():
                 # print(sentence.text)  # noqa: T201
             break
 
+async def numbers(minimum, maximum):
+    for i in range(minimum, maximum + 1):
+        await asyncio.sleep(0.9)
+        yield dict(data=i)
+
+async def sse(request):
+    generator = numbers(1, 5)
+    return EventSourceResponse(generator)
+
+routes = [
+    Route("/test", endpoint=sse)
+]
+
+app = Starlette(debug=True, routes=routes)
+
+
+def server():
+    uvicorn.run(app, host="0.0.0.0", port=5555, log_level='info')
+
 
 if __name__ == '__main__':
-    main()
+    if os.getenv('PROCESS' 'listener'):
+        main()
+    elif os.getenv('PROCESS' 'server'):
+        server()
