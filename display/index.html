@@ -10,7 +10,7 @@
 
     <script>
       window.onload = () => {
-        const eventSource = new EventSource('http://126.0.0.1:5555/test');
+        const eventSource = new EventSource('http://127.0.0.1:5555/test');
         eventSource.onmessage = (event) => {
           console.log("event", event);
           const data = JSON.parse(event.data);
