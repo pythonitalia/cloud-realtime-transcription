@@ -14,10 +14,9 @@
         const eventSource = new EventSource('http://localhost:8343/test');
         const allText = document.querySelector('.text');
         const nextText = document.querySelector('.next-text');
-
+        let prevText = ""
         eventSource.onmessage = (e) => {
-          const message = e.data;
-          nextText.innerHTML = message;
+          allText.innerHTML += message;
 
           console.log(e.data);
         };
