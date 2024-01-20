@@ -49,4 +49,4 @@ async def transcribe(request: Request):
         return_timestamps='word'
     )
     text = outputs["text"].strip()
-    return {"transcribe": text}
+    return {"transcribe": text, "outputs": outputs}
