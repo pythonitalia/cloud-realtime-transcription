@@ -1,3 +1,4 @@
+import threading
 from starlette.applications import Starlette
 from starlette.routing import Route
 from sse_starlette.sse import EventSourceResponse
@@ -130,7 +131,11 @@ def server():
 
 
 if __name__ == '__main__':
-    if os.getenv('PROCESS') == 'listener':
-        main()
-    elif os.getenv('PROCESS') == 'server':
-        server()
+    main_thread = threading.Thread(target=main)
+    main_thread.start()
+
+    server_thread = threading.Thread(target=server)
+    server_thread.start()
+
+    main_thread.join()
+    server_thread.join()
