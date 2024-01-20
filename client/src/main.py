@@ -17,6 +17,7 @@ import pickle
 import speech_recognition as sr
 
 from audio_utils import get_microphone, get_speech_recognizer, get_all_audio_queue, to_audio_array, AudioChunk
+from starlette.middleware.cors import CORSMiddleware
 
 logger = logging.getLogger(__name__)
 
@@ -124,6 +125,7 @@ routes = [
 ]
 
 app = Starlette(debug=True, routes=routes)
+app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_methods=['*'], allow_headers=['*'])
 
 
 def server():
