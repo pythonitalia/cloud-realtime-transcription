@@ -126,7 +126,7 @@ def server():
 
 
 if __name__ == '__main__':
-    if os.getenv('PROCESS' 'listener'):
+    if os.getenv('PROCESS') == 'listener':
         main()
-    elif os.getenv('PROCESS' 'server'):
+    elif os.getenv('PROCESS') == 'server':
         server()
