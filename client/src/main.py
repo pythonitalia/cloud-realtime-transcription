@@ -114,7 +114,11 @@ async def sse(request):
     generator = numbers(1, 5)
     return EventSourceResponse(generator)
 
+def test(request):
+    return "hello world"
+
 routes = [
+    Route('/', endpoint=test),
     Route("/test", endpoint=sse)
 ]
 
