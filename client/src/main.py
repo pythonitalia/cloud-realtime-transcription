@@ -126,7 +126,7 @@ app = Starlette(debug=True, routes=routes)
 
 
 def server():
-    uvicorn.run(app, host="0.0.0.0", port=5555, log_level='info')
+    uvicorn.run(app, host="0.0.0.0", port=8343, log_level='info')
 
 
 if __name__ == '__main__':
