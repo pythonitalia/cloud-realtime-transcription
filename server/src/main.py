@@ -4,6 +4,7 @@ from typing import Union
 from fastapi import Request
 import torch
 from transformers import pipeline
+from transformers import AutoModelForSpeechSeq2Seq, AutoProcessor, pipeline
 
 from fastapi import FastAPI
 from contextlib import asynccontextmanager
@@ -14,14 +15,25 @@ ATTN_IMPLEMENTATION = os.getenv('ATTN_IMPLEMENTATION', "sdpa")
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    torch_dtype = torch.float16 if torch.cuda.is_available() else torch.float32
+    model_id = "openai/whisper-large-v3"
+    device = "cuda:0" if torch.cuda.is_available() else "cpu"
+
+    model = AutoModelForSpeechSeq2Seq.from_pretrained(
+        model_id, torch_dtype=torch_dtype, low_cpu_mem_usage=True, use_safetensors=True
+    )
+    model.to(device)
+
+    processor = AutoProcessor.from_pretrained(model_id)
+
     app.state.transcribe_pipeline = pipeline(
         "automatic-speech-recognition",
-        model="openai/whisper-large-v3",
-        torch_dtype=torch.float16 if ATTN_IMPLEMENTATION == "sdpa" else torch.bfloat16,
-        device=DEVICE,
-        model_kwargs={"attn_implementation": ATTN_IMPLEMENTATION},
+        model=model,
+        tokenizer=processor.tokenizer,
+        feature_extractor=processor.feature_extractor,
+        torch_dtype=torch_dtype,
+        device=device,
     )
-    app.state.transcribe_pipeline.model.to('cuda')
     yield
 
 app = FastAPI(lifespan=lifespan)
