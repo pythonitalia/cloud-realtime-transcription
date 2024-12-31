@@ -1,4 +1,6 @@
 import sounddevice
+from starlette.responses import PlainTextResponse
+
 import threading
 from starlette.applications import Starlette
 from starlette.routing import Route
@@ -131,7 +133,7 @@ async def sse(request):
 
 
 def test(request):
-    return "hello world"
+    return PlainTextResponse("test")
 
 routes = [
     Route('/', endpoint=test),
