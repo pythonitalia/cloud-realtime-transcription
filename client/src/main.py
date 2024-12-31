@@ -37,77 +37,77 @@ def main(transcriptions_queue):
     with microphone:
         speech_recognizer.adjust_for_ambient_noise(source=microphone)
 
-    def record_callback(_, audio: sr.AudioData) -> None:
-        data = audio.get_raw_data()
-        data_queue.put(data)
+        def record_callback(_, audio: sr.AudioData) -> None:
+            data = audio.get_raw_data()
+            data_queue.put(data)
 
-    speech_recognizer.listen_in_background(source=microphone, callback=record_callback, phrase_time_limit=recording_duration)
+        speech_recognizer.listen_in_background(source=microphone, callback=record_callback, phrase_time_limit=recording_duration)
 
-    print("\n🎤 Microphone is now listening...\n")
+        print("\n🎤 Microphone is now listening...\n")
 
-    prev_audio_array = None
-    current_audio_chunk = AudioChunk(start_time=datetime.now(tz=UTC))
+        prev_audio_array = None
+        current_audio_chunk = AudioChunk(start_time=datetime.now(tz=UTC))
 
-    while True:
-        try:
-            now = datetime.now(tz=UTC)
-            # Pull raw recorded audio from the queue.
-            if not data_queue.empty():
-                # Store end time if we're over the recording time limit.
-                if now - current_audio_chunk.start_time > timedelta(seconds=recording_duration):
-                    current_audio_chunk.end_time = now
+        while True:
+            try:
+                now = datetime.now(tz=UTC)
+                # Pull raw recorded audio from the queue.
+                if not data_queue.empty():
+                    # Store end time if we're over the recording time limit.
+                    if now - current_audio_chunk.start_time > timedelta(seconds=recording_duration):
+                        current_audio_chunk.end_time = now
 
-                # Get audio data from queue
-                audio_data = get_all_audio_queue(data_queue)
-                audio_np_array = to_audio_array(audio_data)
+                    # Get audio data from queue
+                    audio_data = get_all_audio_queue(data_queue)
+                    audio_np_array = to_audio_array(audio_data)
 
-                if current_audio_chunk.is_complete:
-                    print('start serialize')
-                    if prev_audio_array is not None:
-                        serialized = pickle.dumps(
-                            np.concatenate((
-                                prev_audio_array,
-                                current_audio_chunk.audio_array
-                            ))
+                    if current_audio_chunk.is_complete:
+                        print('start serialize')
+                        if prev_audio_array is not None:
+                            serialized = pickle.dumps(
+                                np.concatenate((
+                                    prev_audio_array,
+                                    current_audio_chunk.audio_array
+                                ))
+                            )
+                        else:
+                            serialized = pickle.dumps(current_audio_chunk.audio_array)
+                        prev_audio_array = current_audio_chunk.audio_array
+                        print('end serialize')
+
+                        start = time.time()
+                        print('start req')
+                        response = httpx.post(TRANSCRIBING_SERVER, data=serialized)
+                        transcription = response.json()['transcribe']
+                        print('req done', response.text, response.status_code, time.time() - start)
+                        transcriptions_queue.put(transcription)
+
+                        # text = transcribe_model.transcribe(current_audio_chunk.audio_array)
+                        # sentence = Sentence(
+                        #     start_time=current_audio_chunk.start_time, end_time=current_audio_chunk.end_time, text=text
+                        # )
+                        current_audio_chunk = AudioChunk(
+                            audio_array=audio_np_array, start_time=datetime.now(tz=UTC)
                         )
+                        # print(sentence.text)  # noqa: T201
                     else:
-                        serialized = pickle.dumps(current_audio_chunk.audio_array)
-                    prev_audio_array = current_audio_chunk.audio_array
-                    print('end serialize')
+                        current_audio_chunk.update_array(audio_np_array)
 
-                    start = time.time()
-                    print('start req')
-                    response = httpx.post(TRANSCRIBING_SERVER, data=serialized)
-                    transcription = response.json()['transcribe']
-                    print('req done', response.text, response.status_code, time.time() - start)
-                    transcriptions_queue.put(transcription)
+                    # Flush stdout
+                    print("", end="", flush=True)  # noqa: T201
 
+                    # Infinite loops are bad for processors, must sleep.
+                    sleep(0.25)
+            except KeyboardInterrupt:
+                current_audio_chunk.end_time = datetime.now(tz=UTC)
+                if current_audio_chunk.is_complete:
+                    logger.warning("⚠️ Transcribing last chunk...")
                     # text = transcribe_model.transcribe(current_audio_chunk.audio_array)
                     # sentence = Sentence(
                     #     start_time=current_audio_chunk.start_time, end_time=current_audio_chunk.end_time, text=text
                     # )
-                    current_audio_chunk = AudioChunk(
-                        audio_array=audio_np_array, start_time=datetime.now(tz=UTC)
-                    )
                     # print(sentence.text)  # noqa: T201
-                else:
-                    current_audio_chunk.update_array(audio_np_array)
-
-                # Flush stdout
-                print("", end="", flush=True)  # noqa: T201
-
-                # Infinite loops are bad for processors, must sleep.
-                sleep(0.25)
-        except KeyboardInterrupt:
-            current_audio_chunk.end_time = datetime.now(tz=UTC)
-            if current_audio_chunk.is_complete:
-                logger.warning("⚠️ Transcribing last chunk...")
-                # text = transcribe_model.transcribe(current_audio_chunk.audio_array)
-                # sentence = Sentence(
-                #     start_time=current_audio_chunk.start_time, end_time=current_audio_chunk.end_time, text=text
-                # )
-                # print(sentence.text)  # noqa: T201
-            break
+                break
 
 
     # for i in range(minimum, maximum + 1):
