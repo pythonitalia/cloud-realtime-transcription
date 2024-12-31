@@ -82,7 +82,7 @@ def main(transcriptions_queue):
                     print('req status', response.status_code)
                     full_json = response.json()
                     transcription = full_json['transcribe']
-                    print('req done', full_json, response.status_code, time.time() - start)
+                    print('req done -> full json', full_json, 'status code', response.status_code, 'time', time.time() - start)
                     transcriptions_queue.put(transcription)
 
                     # text = transcribe_model.transcribe(current_audio_chunk.audio_array)
