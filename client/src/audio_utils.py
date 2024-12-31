@@ -18,6 +18,7 @@ def get_microphone(default_microphone: str | None = "pulse", sample_rate: int = 
             raise ValueError(err_msg)
         else:
             for index, name in enumerate(sr.Microphone.list_microphone_names()):
+                print(f"Microphone {index}: {name}")
                 if mic_name in name:
                     return sr.Microphone(sample_rate=sample_rate, device_index=index)
     return sr.Microphone(sample_rate=sample_rate)
