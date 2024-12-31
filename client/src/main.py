@@ -16,7 +16,7 @@ from time import sleep
 import pickle
 
 import speech_recognition as sr
-
+from starlette.middleware import Middleware
 from audio_utils import get_microphone, get_speech_recognizer, get_all_audio_queue, to_audio_array, AudioChunk
 from starlette.middleware.cors import CORSMiddleware
 
@@ -138,8 +138,13 @@ routes = [
     Route("/test", endpoint=sse)
 ]
 
-app = Starlette(debug=True, routes=routes)
-app.add_middleware(CORSMiddleware, allow_origins=['*'], allow_methods=['*'], allow_headers=['*'])
+app = Starlette(
+    debug=True,
+    routes=routes,
+    middleware=[
+        Middleware(CORSMiddleware, allow_origins=['*'], allow_methods=['*'], allow_headers=['*'])
+    ],
+)
 
 
 def server(transcriptions_queue):
