@@ -35,6 +35,7 @@ def main(transcriptions_queue):
     speech_recognizer = get_speech_recognizer(energy_threshold=energy_threshold)
 
     with microphone:
+        print('microphone is:', microphone)
         speech_recognizer.adjust_for_ambient_noise(source=microphone)
 
         def record_callback(_, audio: sr.AudioData) -> None:
