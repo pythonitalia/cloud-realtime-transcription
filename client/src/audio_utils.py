@@ -20,6 +20,7 @@ def get_microphone(default_microphone: str | None = "Blue", sample_rate: int = 1
             for index, name in enumerate(sr.Microphone.list_microphone_names()):
                 print(f"Microphone {index}: {name}")
                 if mic_name in name:
+                    print('Microphone found:', name, index)
                     return sr.Microphone(sample_rate=sample_rate, device_index=index)
     return sr.Microphone(sample_rate=sample_rate)
 
