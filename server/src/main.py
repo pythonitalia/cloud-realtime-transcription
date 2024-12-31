@@ -46,7 +46,7 @@ async def transcribe(request: Request):
             'task': 'transcribe',
             'language': 'english'
         },
-        return_timestamps='word'
+        # return_timestamps='word'
     )
     text = outputs["text"].strip()
     return {"transcribe": text, "outputs": outputs}
