@@ -30,9 +30,8 @@ def main(transcriptions_queue):
     energy_threshold = 300
 
     data_queue = Queue()
-    microphone = get_microphone(sample_rate=sample_rate)
 
-    with microphone:
+    with get_microphone(sample_rate=sample_rate) as microphone:
         print('microphone is:', microphone)
         speech_recognizer = get_speech_recognizer(energy_threshold=energy_threshold)
         speech_recognizer.adjust_for_ambient_noise(source=microphone)
