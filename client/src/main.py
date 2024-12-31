@@ -80,8 +80,9 @@ def main(transcriptions_queue):
                     print('start req')
                     response = httpx.post(TRANSCRIBING_SERVER, data=serialized)
                     print('req status', response.status_code)
-                    transcription = response.json()['transcribe']
-                    print('req done', response.text, response.status_code, time.time() - start)
+                    full_json = response.json()
+                    transcription = full_json['transcribe']
+                    print('req done', full_json, response.status_code, time.time() - start)
                     transcriptions_queue.put(transcription)
 
                     # text = transcribe_model.transcribe(current_audio_chunk.audio_array)
