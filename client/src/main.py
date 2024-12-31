@@ -79,6 +79,7 @@ def main(transcriptions_queue):
                     start = time.time()
                     print('start req')
                     response = httpx.post(TRANSCRIBING_SERVER, data=serialized)
+                    print('req status', response.status_code)
                     transcription = response.json()['transcribe']
                     print('req done', response.text, response.status_code, time.time() - start)
                     transcriptions_queue.put(transcription)
