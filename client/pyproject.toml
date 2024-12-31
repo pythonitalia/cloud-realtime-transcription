@@ -10,10 +10,10 @@ dependencies = [
     "PyAudio>=0.2.14",
     "SpeechRecognition>=3.10.1",
     "transformers[torch]>=4.36.2",
-    "httpx>=0.26.0",
-    "starlette>=0.35.1",
-    "uvicorn>=0.26.0",
-    "sse-starlette>=1.8.2",
+    "httpx==0.28.1",
+    "starlette==0.45.1",
+    "uvicorn==0.34.0",
+    "sse-starlette==2.2.1",
     "sounddevice>=0.5.1",
 ]
 requires-python = ">=3.11"
