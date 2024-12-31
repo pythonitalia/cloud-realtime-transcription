@@ -6,7 +6,7 @@ import numpy as np
 import speech_recognition as sr
 
 
-def get_microphone(default_microphone: str | None = "pulse", sample_rate: int = 16000) -> sr.Microphone:
+def get_microphone(default_microphone: str | None = "Blue", sample_rate: int = 16000) -> sr.Microphone:
     """Get the specified system microphone if available."""
     # Important for linux users.
     # Prevents permanent application hang and crash by using the wrong Microphone
